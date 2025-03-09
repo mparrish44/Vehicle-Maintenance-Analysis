@@ -1,0 +1,7 @@
+# MLproject
+name: ovm_model
+docker_env:
+  image: ovm_model_image
+entry_points:
+  main:
+    command: "python ovm_model.py"
