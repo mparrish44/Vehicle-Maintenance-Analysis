@@ -1,5 +1,3 @@
-# Vehicle-Maintenance-Analysis
-
 # Vehicle Maintenance Prediction Model
 
 This project develops a machine learning model to predict vehicle maintenance requirements based on various operational and environmental factors.
@@ -10,6 +8,7 @@ The goal of this project is to build a predictive model that can assess the like
 
 ## Files and Directory Structure
 
+'''
 ├─ config.yaml           # Configuration file for data paths and model parameters
 ├── data_clean.py        # Script for cleaning and preprocessing the raw data
 ├── load_data.py         # Script for loading configuration files
@@ -17,7 +16,7 @@ The goal of this project is to build a predictive model that can assess the like
 ├── README.md            # Project documentation
 ├── mlruns/              # MLflow tracking directory (created during runs)
 └── .venv/               # Virtual environment directory
-
+'''
 
 ## Setup and Installation
 
