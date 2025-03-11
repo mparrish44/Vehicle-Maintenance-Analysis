@@ -31,38 +31,6 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="sklearn")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 
-def plot_rf_feature_importance(model, feature_names, output_path=None):
-    """
-    Plots feature importance for a trained Random Forest model.
-
-    Args:
-        model (RandomForestClassifier): Trained Random Forest model.
-        feature_names (list): List of feature names corresponding to the input dataset.
-        output_path (str): Optional; path to save the plot.
-    """
-    # Extract feature importances
-    importance_values = model.feature_importances_
-    feature_importance = pd.DataFrame({
-        "Feature": feature_names,
-        "Importance": importance_values
-    }).sort_values(by="Importance", ascending=False)
-
-    # Plot the feature importances
-    plt.figure(figsize=(10, 6))
-    sns.barplot(data=feature_importance, x="Importance", y="Feature", palette="viridis")
-    plt.title("Feature Importance - Random Forest")
-    plt.xlabel("Importance")
-    plt.ylabel("Feature")
-    plt.tight_layout()
-
-    # Save or show the plot
-    if output_path:
-        plt.savefig(output_path)
-        print(f"Feature importance visualization saved to {output_path}")
-    else:
-        plt.show()
-
-
 def plot_learning_curve(estimator, X, y, scoring="accuracy", output_path=None):
     """
     Plots the learning curve for a model.
@@ -119,6 +87,69 @@ def plot_learning_curve(estimator, X, y, scoring="accuracy", output_path=None):
         print(f"Learning curve saved to: {output_path}")
     else:
         plt.show()
+
+
+def plot_feature_importance(model, feature_names, output_path=None, top_n=10):
+    """
+    Plots and saves feature importance for a given model.
+
+    Args:
+        model: The trained machine learning model.
+        feature_names: List of feature names.
+        output_path (str): Optional; path to save the plot.
+        top_n (int): Number of top features to display (default: 10).
+    """
+    try:
+        # Determine feature importance based on model type
+        importances = None
+        if hasattr(model, "feature_importances_"):  # Tree-based models (e.g., Random Forest, XGBoost)
+            importances = model.feature_importances_
+        elif hasattr(model, "coef_"):  # Linear models (e.g., Logistic Regression)
+            if len(model.coef_.shape) > 1:  # Multiclass classification case
+                importances = model.coef_[0]  # Use coefficients for the first class
+            else:
+                importances = model.coef_
+            importances = np.abs(importances)  # Use absolute values for coefficients
+        else:
+            logging.warning(f"{type(model).__name__} does not support feature importance plotting.")
+            return
+
+        # If feature importance is still None, skip plotting
+        if importances is None:
+            logging.warning(f"No feature importance available for {type(model).__name__}.")
+            return
+
+        # Create a DataFrame to sort and rank features by importance
+        feature_importance = pd.DataFrame({
+            "Feature": feature_names,
+            "Importance": importances
+        }).sort_values(by="Importance", ascending=False)
+
+        # Plot the top N features
+        plt.figure(figsize=(10, 6))
+        sns.barplot(
+            data=feature_importance.head(top_n),
+            x="Importance",
+            y="Feature",
+            palette="viridis"
+        )
+        plt.title(f"Top {top_n} Feature Importances ({type(model).__name__})", fontsize=14)
+        plt.xlabel("Importance", fontsize=12)
+        plt.ylabel("Feature", fontsize=12)
+        plt.tight_layout()
+
+        # Save or display the plot
+        if output_path:
+            plt.savefig(output_path)
+            logging.info(f"Feature importance plot saved to {output_path}")
+        else:
+            plt.show()
+
+        # Clean up the plot after saving or showing
+        plt.close()
+
+    except Exception as e:
+        logging.error(f"Error plotting feature importance: {e}")
 
 
 def train_and_evaluate_model(config):
@@ -246,7 +277,7 @@ def train_and_evaluate_model(config):
                     # Plot raw dataset distribution
                     plt.figure(figsize=(8, 6))
                     sns.barplot(x=class_labels_raw, y=class_counts_raw.values, palette="plasma")
-                    plt.title("Figure B4: Class Distribution in Raw Dataset", fontsize=14)
+                    plt.title("Class Distribution in Raw Dataset", fontsize=14)
                     plt.xlabel("Classes", fontsize=12)
                     plt.ylabel("Frequency", fontsize=12)
                     plt.xticks(fontsize=10)
@@ -320,29 +351,38 @@ def train_and_evaluate_model(config):
                     mlflow.sklearn.log_model(model, artifact_path=f"Models/{model_name.replace(' ', '_')}",
                                              input_example=input_example)
 
-                # Generate visualizations conditionally for specific models
-                if model_name == "Random Forest":
-                    # Plot Feature Importance (if Random Forest is used)
-                    plot_rf_feature_importance(
+                # Generate feature importance visualizations, if applicable
+                if hasattr(model, "feature_importances_") or hasattr(model, "coef_"):
+                    # Use the general plot_feature_importance function for feature visualization
+                    feature_importance_output_path = Path(
+                        'visualizations') / f"{model_name.replace(' ', '_')}_feature_importance.png"
+                    plot_feature_importance(
                         model, feature_names=scaled_columns,
-                        output_path=Path('visualizations') / "rf_feature_importance.png"
+                        output_path=feature_importance_output_path
                     )
                     mlflow.log_artifact(
-                        Path('visualizations') / "rf_feature_importance.png",
-                        artifact_path="Visualizations"
+                        feature_importance_output_path, artifact_path="Visualizations"
                     )
+                else:
+                    logging.info(f"{model_name} does not support feature importance plotting.")
 
-                elif model_name == "XGBoost":
-                    # Plot Learning Curve (if XGBoost is used)
+                # **Plot and save the learning curve for all models**
+                learning_curve_output_path = Path(
+                    'visualizations') / f"{model_name.replace(' ', '_')}_learning_curve.png"
+                try:
                     plot_learning_curve(
-                        model, X_train_scaled.values, y_train_resampled,
-                        output_path=Path('visualizations') / "xgb_learning_curve.png"
+                        estimator=model,
+                        X=X_train_scaled.values,
+                        y=y_train_resampled,
+                        scoring="accuracy",
+                        output_path=learning_curve_output_path
                     )
-                    logging.info("Learning curve is plotted and saved.")
-
                     mlflow.log_artifact(
-                        Path('visualizations') / "xgb_learning_curve.png", artifact_path="Visualizations"
+                        str(learning_curve_output_path), artifact_path="Visualizations"
                     )
+                    logging.info(f"Learning curve plotted and saved for {model_name} at {learning_curve_output_path}")
+                except Exception as e:
+                    logging.error(f"Failed to plot learning curve for {model_name}: {e}")
 
                 # Model evaluation and logging metrics
                 y_pred = model.predict(X_test_scaled)
