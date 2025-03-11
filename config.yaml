@@ -7,7 +7,9 @@ SAMPLE_SIZES:
   LOGISTICS: 92000
 OUTPUT_PATHS:
   CLEANED_DATA: "cleaned_vehicle_maintenance_data.csv"
-  MODEL_DIR: "models/"
+  MERGED_DATA: "data/merged_data.csv"
+  MODEL_DIR: "models"
+  VIZ_DIR: "visualizations"
 RANDOM_STATE: 42
 MODEL_PARAMS:
   LOGISTIC_REGRESSION:
