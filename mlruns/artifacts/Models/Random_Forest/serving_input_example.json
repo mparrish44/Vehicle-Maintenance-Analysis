@@ -1,0 +1,40 @@
+{
+  "dataframe_split": {
+    "columns": [
+      "Vehicle_Age",
+      "Usage_Hours",
+      "Total_Miles",
+      "Failure_History",
+      "Predictive_Score",
+      "Impact_on_Efficiency",
+      "Downtime_Maintenance",
+      "Days_Since_Last_Maintenance",
+      "Weather_Conditions_Clear",
+      "Weather_Conditions_Rainy",
+      "Weather_Conditions_Snowy",
+      "Weather_Conditions_Windy",
+      "Road_Conditions_Highway",
+      "Road_Conditions_Rural",
+      "Road_Conditions_Urban"
+    ],
+    "data": [
+      [
+        -0.01296751226964726,
+        -0.08022800024599035,
+        0.038970694247730676,
+        -0.5944112736723489,
+        1.7048964152327997,
+        1.6680304821105632,
+        -0.38728398625728605,
+        -0.6445018939210696,
+        0.5338649712359488,
+        -0.4490814730466487,
+        -0.1864096846192018,
+        -0.15265773961914486,
+        -0.8698137185945417,
+        1.4392337798579353,
+        -0.6059129085987699
+      ]
+    ]
+  }
+}

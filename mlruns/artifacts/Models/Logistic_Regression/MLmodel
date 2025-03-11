@@ -1,0 +1,43 @@
+artifact_path: Models/Logistic_Regression
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.9.2
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.6.1
+is_signature_from_type_hint: false
+mlflow_version: 2.20.3
+model_size_bytes: 2895
+model_uuid: c9a10c106c1c4db3b33040773efe5393
+run_id: e7e8fae60d8346b083fce04a246f5691
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "Vehicle_Age", "required": true}, {"type":
+    "double", "name": "Usage_Hours", "required": true}, {"type": "double", "name":
+    "Total_Miles", "required": true}, {"type": "double", "name": "Failure_History",
+    "required": true}, {"type": "double", "name": "Predictive_Score", "required":
+    true}, {"type": "double", "name": "Impact_on_Efficiency", "required": true}, {"type":
+    "double", "name": "Downtime_Maintenance", "required": true}, {"type": "double",
+    "name": "Days_Since_Last_Maintenance", "required": true}, {"type": "double", "name":
+    "Weather_Conditions_Clear", "required": true}, {"type": "double", "name": "Weather_Conditions_Rainy",
+    "required": true}, {"type": "double", "name": "Weather_Conditions_Snowy", "required":
+    true}, {"type": "double", "name": "Weather_Conditions_Windy", "required": true},
+    {"type": "double", "name": "Road_Conditions_Highway", "required": true}, {"type":
+    "double", "name": "Road_Conditions_Rural", "required": true}, {"type": "double",
+    "name": "Road_Conditions_Urban", "required": true}]'
+  outputs: '[{"type": "double", "required": true}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-03-11 07:44:23.579975'
