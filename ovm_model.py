@@ -227,7 +227,45 @@ def train_and_evaluate_model(config):
             mlflow.log_param("sklearn_version", sklearn.__version__)
             mlflow.log_param("test_size", config["TRAIN_TEST_SPLIT"]["TEST_SIZE"])
 
-            # **SMOTE Visualization Code**: Generate and log the plot of class distribution
+            # STEP 1: **Raw Dataset Class Distribution Visualization**
+            try:
+                # Ensure the directory for visualizations exists
+                output_path = Path(config["OUTPUT_PATHS"]["VIZ_DIR"])
+                output_path.mkdir(parents=True, exist_ok=True)
+
+                # Check if the target variable exists
+                if 'Maintenance_Required' not in cleaned_df.columns:
+                    logging.error("Error: 'Maintenance_Required' column not found in DataFrame.")
+                else:
+                    logging.info("Generating raw class distribution visualization.")
+                    # Count occurrences of each class
+                    class_counts_raw = cleaned_df['Maintenance_Required'].value_counts()
+                    class_indices_raw = class_counts_raw.index.astype(int)
+                    class_labels_raw = [f"Class {c}" for c in class_indices_raw]
+
+                    # Plot raw dataset distribution
+                    plt.figure(figsize=(8, 6))
+                    sns.barplot(x=class_labels_raw, y=class_counts_raw.values, palette="plasma")
+                    plt.title("Figure B4: Class Distribution in Raw Dataset", fontsize=14)
+                    plt.xlabel("Classes", fontsize=12)
+                    plt.ylabel("Frequency", fontsize=12)
+                    plt.xticks(fontsize=10)
+                    plt.yticks(fontsize=10)
+                    plt.tight_layout()
+
+                    # Save the visualization
+                    raw_class_dist_path = output_path / "class_distribution_raw.png"
+                    plt.savefig(raw_class_dist_path)
+                    plt.close()
+                    logging.info(f"Raw dataset class distribution plot saved to {raw_class_dist_path}")
+
+                    # Log as an MLflow artifact
+                    mlflow.log_artifact(str(raw_class_dist_path), artifact_path="Visualizations")
+
+            except Exception as e:
+                logging.error(f"Failed to generate raw dataset distribution visualization: {e}")
+
+            # STEP 2: **SMOTE Visualization Code**
             logging.info("Generating SMOTE class distribution visualization.")
             plt.figure(figsize=(8, 6))
             class_counts = pd.Series(y_train_resampled).value_counts()
@@ -258,7 +296,7 @@ def train_and_evaluate_model(config):
             mlflow.log_artifact(smote_plot_path, artifact_path="Visualizations")
             plt.close()
 
-            # Start training models
+            # STEP 3: **Start training models**
             for model_name, model in models.items():
                 logging.info(f"{model_name} Start...")
                 # Train the model on the scaled training data
