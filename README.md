@@ -87,7 +87,8 @@ Make sure the following is installed:
 2. **Create and Activate a Virtual Environment**:
 
     ```bash
-       python -m venv venv
+   python -m venv venv
+    
    source venv/bin/activate  # For Linux/Mac
    venv\Scripts\activate     # For Windows
     ```
