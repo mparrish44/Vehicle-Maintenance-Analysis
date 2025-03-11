@@ -1,0 +1,40 @@
+DATA_PATHS:
+  FLEET_DATA: "california-state-fleet-2015-2023.csv"
+  LOGISTICS_DATA: "logistics_dataset_with_maintenance_required.csv"
+ENCODING: "ISO-8859-1"
+SAMPLE_SIZES:
+  FLEET: 100000
+  LOGISTICS: 92000
+OUTPUT_PATHS:
+  CLEANED_DATA: "cleaned_vehicle_maintenance_data.csv"
+  MERGED_DATA: "data/merged_data.csv"
+  MODEL_DIR: "models"
+  VIZ_DIR: "visualizations"
+RANDOM_STATE: 42
+MODEL_PARAMS:
+  LOGISTIC_REGRESSION:
+    class_weight: "balanced"
+    max_iter: 500
+  RANDOM_FOREST:
+    n_estimators: 200
+    max_depth: 14
+    min_samples_split: 3
+    n_jobs: -1
+  XGBOOST:
+    n_estimators: 100
+    learning_rate: 0.1
+    max_depth: 5
+    tree_method: "hist"
+    random_state: 42
+    n_jobs: -1
+GRID_SEARCH_PARAMS:
+  RANDOM_FOREST:
+    n_estimators: [100, 200]
+    max_depth: [10, 12, 14]
+    min_samples_split: [2, 3, 5]
+  XGBOOST:
+    n_estimators: [50, 100]
+    learning_rate: [0.05, 0.1]
+    max_depth: [4, 5]
+TRAIN_TEST_SPLIT:
+  TEST_SIZE: 0.2
