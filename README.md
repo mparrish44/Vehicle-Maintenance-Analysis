@@ -4,6 +4,8 @@ A Machine Learning project designed to predict vehicle maintenance requirements 
 like vehicle age, usage hours, historical failures, and environmental conditions. This project uses multiple 
 machine learning models and visualizations to ensure insights are transparent and actionable.
 
+![Learning Curve](https://github.com/mparrish44/MParrish.github.io/blob/main/Portfolio/Projects/Visualizations/XGBoost_learning_curve.png)
+
 ## Project Overview
 
 The goal of this project is to:
